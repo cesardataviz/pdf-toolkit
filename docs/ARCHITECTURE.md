@@ -1,12 +1,64 @@
 # Arquitectura
 
+## Componentes
+
+Todo ocurre en el navegador salvo Office → PDF, que pasa por el servidor local opcional.
+
+```mermaid
+flowchart LR
+    user([Usuario])
+
+    subgraph browser["Navegador · los archivos no salen de aquí"]
+        ui["App.tsx<br/>interfaz de herramientas"]
+        pdfops["lib/pdfOps.ts<br/>pdf-lib: buildPdf · imagesToPdf"]
+        images["lib/images.ts<br/>canvas: convertImage"]
+        office["lib/office.ts<br/>cliente HTTP"]
+    end
+
+    subgraph server["Servidor local opcional · Docker"]
+        api["FastAPI<br/>POST /api/office-to-pdf"]
+        lo["LibreOffice headless<br/>perfil aislado + timeout"]
+        tmp[("Directorio temporal<br/>se borra al responder")]
+    end
+
+    user --> ui
+    ui --> pdfops
+    ui --> images
+    images -- "WebP/BMP → PNG" --> pdfops
+    ui --> office
+    office -- "solo Word/Excel/PPT" --> api
+    api --> tmp
+    api --> lo
+    lo --> tmp
 ```
-Navegador (Vite + React)
- ├─ lib/pdfOps.ts   pdf-lib: buildPdf (combinar/reordenar/rotar/eliminar), imagesToPdf
- ├─ lib/images.ts   canvas: convertImage (jpg/png/webp), normalización para PDF
- └─ lib/office.ts   ──HTTP──►  server/ (FastAPI, opcional)
-                                └─ POST /api/office-to-pdf → LibreOffice headless → PDF
-                                   (también sirve el frontend compilado)
+
+## Flujo de una operación
+
+```mermaid
+sequenceDiagram
+    actor U as Usuario
+    participant UI as Navegador
+    participant P as pdfOps (pdf-lib)
+    participant S as Servidor (FastAPI)
+    participant L as LibreOffice
+
+    Note over U,P: Combinar / reordenar / rotar: 100% local
+    U->>UI: Selecciona uno o varios PDFs
+    UI->>P: listPages(buffers)
+    P-->>UI: PageRef[] (una por página)
+    U->>UI: Reordena, rota o elimina páginas
+    UI->>P: buildPdf(buffers, pages)
+    P-->>UI: PDF nuevo en memoria
+    UI-->>U: Descarga resultado.pdf
+
+    Note over U,L: Office → PDF: único paso que usa servidor
+    U->>UI: Selecciona un .docx
+    UI->>S: POST /api/office-to-pdf
+    S->>S: Valida extensión, tamaño y token
+    S->>L: soffice --convert-to pdf (con timeout)
+    L-->>S: Archivo .pdf
+    S-->>UI: PDF y borra el temporal
+    UI-->>U: Descarga documento.pdf
 ```
 
 ## Principios

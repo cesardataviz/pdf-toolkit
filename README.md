@@ -5,6 +5,38 @@ imágenes a PDF y conversión entre JPG/PNG/WebP. **Tus archivos no se suben a n
 
 > Estado: en desarrollo. Ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## Arquitectura
+
+```mermaid
+flowchart LR
+    user([Usuario])
+
+    subgraph browser["Navegador · los archivos no salen de aquí"]
+        ui["App.tsx<br/>interfaz de herramientas"]
+        pdfops["lib/pdfOps.ts<br/>pdf-lib: buildPdf · imagesToPdf"]
+        images["lib/images.ts<br/>canvas: convertImage"]
+        office["lib/office.ts<br/>cliente HTTP"]
+    end
+
+    subgraph server["Servidor local opcional · Docker"]
+        api["FastAPI<br/>POST /api/office-to-pdf"]
+        lo["LibreOffice headless<br/>perfil aislado + timeout"]
+        tmp[("Directorio temporal<br/>se borra al responder")]
+    end
+
+    user --> ui
+    ui --> pdfops
+    ui --> images
+    images -- "WebP/BMP → PNG" --> pdfops
+    ui --> office
+    office -- "solo Word/Excel/PPT" --> api
+    api --> tmp
+    api --> lo
+    lo --> tmp
+```
+
+El flujo paso a paso y las decisiones técnicas están en [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
 ## Qué hace y dónde corre
 
 | Herramienta | Dónde |
