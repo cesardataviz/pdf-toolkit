@@ -1,0 +1,7 @@
+services:
+  pdf-toolkit:
+    build: { context: ., dockerfile: docker/Dockerfile }
+    environment:
+      PDF_TOOLKIT_MAX_UPLOAD_MB: ${PDF_TOOLKIT_MAX_UPLOAD_MB:-100}
+      PDF_TOOLKIT_API_TOKEN: ${PDF_TOOLKIT_API_TOKEN:-}
+    ports: ["127.0.0.1:8000:8000"]   # solo accesible desde tu máquina
