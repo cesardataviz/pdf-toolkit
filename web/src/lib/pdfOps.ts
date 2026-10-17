@@ -46,3 +46,12 @@ export async function imagesToPdf(images: { bytes: ArrayBuffer; type: "jpg" | "p
   }
   return out.save();
 }
+
+/** Un PDF por grupo de páginas (índices base 0). Sirve para dividir o extraer. */
+export async function splitPdf(source: ArrayBuffer, groups: number[][]): Promise<Uint8Array[]> {
+  const out: Uint8Array[] = [];
+  for (const group of groups) {
+    out.push(await buildPdf([source], group.map((index) => ({ source: 0, index, rotate: 0 }))));
+  }
+  return out;
+}

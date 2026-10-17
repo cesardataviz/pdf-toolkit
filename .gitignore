@@ -8,3 +8,6 @@ dist/
 .env
 .pytest_cache/
 .ruff_cache/
+
+# Metadatos que genera pip install -e
+*.egg-info/

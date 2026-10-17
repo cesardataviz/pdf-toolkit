@@ -57,3 +57,35 @@ def test_rejects_bad_extension_size_and_token(tmp_path, fake_soffice):
     ok = locked.post("/api/office-to-pdf", files={"file": ("a.docx", b"PK", "x")},
                      headers={"Authorization": "Bearer s3"})
     assert ok.status_code == 200
+
+
+@pytest.mark.skipif(main.find_soffice() is None, reason="LibreOffice no instalado")
+def test_real_libreoffice_converts_docx(tmp_path):
+    """Conversión real de punta a punta (sin simular soffice)."""
+    import io
+
+    docx = pytest.importorskip("docx")
+    doc = docx.Document()
+    doc.add_heading("Contrato de prueba", level=1)
+    doc.add_paragraph("Texto con tildes: acción, niño, información.")
+    buf = io.BytesIO()
+    doc.save(buf)
+
+    r = client(tmp_path).post(
+        "/api/office-to-pdf", files={"file": ("Contrato prueba.docx", buf.getvalue(), "application/octet-stream")}
+    )
+    assert r.status_code == 200, r.text
+    assert r.content.startswith(b"%PDF")
+    from pypdf import PdfReader
+
+    text = PdfReader(io.BytesIO(r.content)).pages[0].extract_text()
+    assert "Contrato de prueba" in text and "niño" in text
+
+
+def test_soffice_path_override(tmp_path, monkeypatch):
+    fake = tmp_path / "soffice.exe"
+    fake.write_text("")
+    monkeypatch.setenv("PDF_TOOLKIT_SOFFICE_CMD", str(fake))
+    assert main.find_soffice() == str(fake)
+    monkeypatch.setenv("PDF_TOOLKIT_SOFFICE_CMD", str(tmp_path / "no-existe.exe"))
+    assert main.find_soffice() is None

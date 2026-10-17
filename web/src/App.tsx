@@ -1,156 +1,86 @@
-import { useEffect, useState } from "react";
-import { convertImage, toEmbeddable, type ImageTarget } from "./lib/images";
-import { officeServerAvailable, officeToPdf } from "./lib/office";
-import { buildPdf, imagesToPdf, listPages, type PageRef } from "./lib/pdfOps";
+import { useState } from "react";
+import Header from "./components/Header";
+import ConvertImageTool from "./tools/ConvertImageTool";
+import ImagesToPdfTool from "./tools/ImagesToPdfTool";
+import OfficeTool from "./tools/OfficeTool";
+import OrganizeTool from "./tools/OrganizeTool";
+import SplitTool from "./tools/SplitTool";
 
-type Tool = "pages" | "images-pdf" | "image-convert" | "office";
+type ToolId = "organize" | "split" | "images" | "convert" | "office";
 
-function save(data: Blob | Uint8Array, name: string) {
-  const blob = data instanceof Blob ? data : new Blob([new Uint8Array(data)], { type: "application/pdf" });
-  const url = URL.createObjectURL(blob);
-  Object.assign(document.createElement("a"), { href: url, download: name }).click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
+const TOOLS: { id: ToolId; label: string; title: string; lede: string }[] = [
+  {
+    id: "organize",
+    label: "Combinar y ordenar",
+    title: "Combina y ordena tus PDFs",
+    lede: "Junta varios PDFs, arrastra las páginas para cambiar el orden, gíralas o quita las que sobran.",
+  },
+  {
+    id: "split",
+    label: "Dividir o extraer",
+    title: "Divide un PDF o extrae páginas",
+    lede: "Quédate solo con las páginas que necesitas o separa el documento en varios archivos.",
+  },
+  {
+    id: "images",
+    label: "Imágenes a PDF",
+    title: "Convierte imágenes en un PDF",
+    lede: "Fotos, capturas o escaneos en JPG, PNG o WebP: una imagen por página, en el orden que elijas.",
+  },
+  {
+    id: "convert",
+    label: "Convertir imagen",
+    title: "Convierte imágenes de formato",
+    lede: "Pasa de WebP a JPG, de PNG a JPG y más, sin perder tiempo ni subir nada.",
+  },
+  {
+    id: "office",
+    label: "Word, Excel, PPT a PDF",
+    title: "Convierte documentos de Office a PDF",
+    lede: "Word, Excel y PowerPoint a PDF con LibreOffice, en tu propia computadora.",
+  },
+];
 
-const stem = (name: string) => name.replace(/\.[^.]+$/, "");
-
-// Esqueleto funcional. Pendiente: miniaturas (pdf.js) y arrastrar para reordenar.
 export default function App() {
-  const [tool, setTool] = useState<Tool>("pages");
-  const [files, setFiles] = useState<File[]>([]);
-  const [buffers, setBuffers] = useState<ArrayBuffer[]>([]);
-  const [pages, setPages] = useState<PageRef[]>([]);
-  const [target, setTarget] = useState<ImageTarget>("jpg");
-  const [office, setOffice] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-
-  useEffect(() => {
-    officeServerAvailable().then(setOffice);
-  }, []);
-
-  async function run(fn: () => Promise<void>) {
-    setError(null);
-    setBusy(true);
-    try {
-      await fn();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function onFiles(list: FileList | null) {
-    const arr = Array.from(list ?? []);
-    setFiles(arr);
-    setPages([]);
-    if (tool === "pages" && arr.length) {
-      await run(async () => {
-        const bufs = await Promise.all(arr.map((f) => f.arrayBuffer()));
-        setBuffers(bufs);
-        setPages(await listPages(bufs));
-      });
-    }
-  }
-
-  const move = (i: number, d: -1 | 1) =>
-    setPages((p) => {
-      const j = i + d;
-      if (j < 0 || j >= p.length) return p;
-      const n = [...p];
-      [n[i], n[j]] = [n[j], n[i]];
-      return n;
-    });
-  const rotate = (i: number) =>
-    setPages((p) => p.map((x, k) => (k === i ? { ...x, rotate: (x.rotate + 90) % 360 } : x)));
-  const remove = (i: number) => setPages((p) => p.filter((_, k) => k !== i));
-
-  const accept: Record<Tool, string> = {
-    pages: "application/pdf",
-    "images-pdf": "image/*",
-    "image-convert": "image/*",
-    office: ".doc,.docx,.odt,.rtf,.xls,.xlsx,.ods,.ppt,.pptx,.odp",
-  };
+  const [tool, setTool] = useState<ToolId>("organize");
+  const current = TOOLS.find((t) => t.id === tool)!;
 
   return (
-    <main style={{ maxWidth: 760, margin: "2rem auto", fontFamily: "system-ui", padding: "0 1rem" }}>
-      <h1>pdf-toolkit</h1>
-      <p>Tus archivos se procesan en este navegador. No se suben a ningún servidor.</p>
+    <div className="app">
+      <Header />
+      <main className="main">
+        <nav className="tool-tabs" aria-label="Herramientas">
+          {TOOLS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              className="tool-tab"
+              aria-current={t.id === tool ? "page" : undefined}
+              onClick={() => setTool(t.id)}
+            >
+              {t.label}
+            </button>
+          ))}
+        </nav>
 
-      <nav style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
-        {([
-          ["pages", "Combinar / ordenar / rotar PDF"],
-          ["images-pdf", "Imágenes → PDF"],
-          ["image-convert", "Convertir imagen"],
-          ["office", "Word/Excel/PPT → PDF"],
-        ] as [Tool, string][]).map(([t, label]) => (
-          <button key={t} disabled={tool === t} onClick={() => { setTool(t); setFiles([]); setPages([]); }}>
-            {label}
-          </button>
-        ))}
-      </nav>
+        <header className="tool-head">
+          <h1 className="tool-title">{current.title}</h1>
+          <p className="lede">{current.lede}</p>
+        </header>
 
-      <input key={tool} type="file" multiple={tool !== "office"} accept={accept[tool]}
-        onChange={(e) => onFiles(e.target.files)} />
-
-      {tool === "pages" && pages.length > 0 && (
-        <section>
-          <ol>
-            {pages.map((p, i) => (
-              <li key={`${p.source}-${p.index}-${i}`}>
-                {files[p.source]?.name} · pág. {p.index + 1}{p.rotate ? ` · ${p.rotate}°` : ""}{" "}
-                <button onClick={() => move(i, -1)} aria-label="Subir">↑</button>
-                <button onClick={() => move(i, 1)} aria-label="Bajar">↓</button>
-                <button onClick={() => rotate(i)} aria-label="Rotar">⟳</button>
-                <button onClick={() => remove(i)} aria-label="Eliminar">✕</button>
-              </li>
-            ))}
-          </ol>
-          <button disabled={busy} onClick={() => run(async () => save(await buildPdf(buffers, pages), "resultado.pdf"))}>
-            Generar PDF
-          </button>
+        {/* key: cada herramienta empieza limpia al cambiar de pestaña */}
+        <section className="tool-body" key={tool}>
+          {tool === "organize" && <OrganizeTool />}
+          {tool === "split" && <SplitTool />}
+          {tool === "images" && <ImagesToPdfTool />}
+          {tool === "convert" && <ConvertImageTool />}
+          {tool === "office" && <OfficeTool />}
         </section>
-      )}
-
-      {tool === "images-pdf" && (
-        <p>
-          <button disabled={busy || !files.length} onClick={() => run(async () =>
-            save(await imagesToPdf(await Promise.all(files.map(toEmbeddable))), "imagenes.pdf"))}>
-            Crear PDF ({files.length} imágenes)
-          </button>
-        </p>
-      )}
-
-      {tool === "image-convert" && (
-        <p>
-          <select value={target} onChange={(e) => setTarget(e.target.value as ImageTarget)}>
-            {(["jpg", "png", "webp"] as const).map((t) => <option key={t}>{t}</option>)}
-          </select>{" "}
-          <button disabled={busy || !files.length} onClick={() => run(async () => {
-            for (const f of files) save(await convertImage(f, target), `${stem(f.name)}.${target}`);
-          })}>
-            Convertir
-          </button>
-        </p>
-      )}
-
-      {tool === "office" && (
-        office ? (
-          <p>
-            <button disabled={busy || !files.length} onClick={() => run(async () =>
-              save(await officeToPdf(files[0]), `${stem(files[0].name)}.pdf`))}>
-              Convertir a PDF
-            </button>{" "}
-            <small>Se procesa en el servidor local (LibreOffice), no en internet.</small>
-          </p>
-        ) : (
-          <p>Esta función necesita el servidor opcional con LibreOffice. Ver README: <code>docker compose up</code>.</p>
-        )
-      )}
-
-      {busy && <p>Procesando…</p>}
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
-    </main>
+      </main>
+      <footer className="footer">
+        <span>pdf-toolkit · código abierto con licencia MIT</span>
+        <span>Proyecto hermano: files2md (documentos a Markdown con OCR)</span>
+      </footer>
+    </div>
   );
 }

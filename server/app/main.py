@@ -9,6 +9,7 @@ una conversión típica tarda segundos. Si algún día se expone a muchos usuari
 """
 from __future__ import annotations
 
+import os
 import re
 import shutil
 import subprocess
@@ -41,8 +42,23 @@ def safe_name(name: str) -> str:
     return cleaned[:120]
 
 
+# Rutas típicas cuando LibreOffice no queda en el PATH (pasa casi siempre en Windows y macOS).
+_SOFFICE_PATHS = [
+    r"C:\Program Files\LibreOffice\program\soffice.exe",
+    r"C:\Program Files (x86)\LibreOffice\program\soffice.exe",
+    "/Applications/LibreOffice.app/Contents/MacOS/soffice",
+]
+
+
 def find_soffice() -> str | None:
-    return shutil.which("soffice") or shutil.which("libreoffice")
+    """PDF_TOOLKIT_SOFFICE_CMD > PATH > rutas de instalación habituales."""
+    custom = os.environ.get("PDF_TOOLKIT_SOFFICE_CMD")
+    if custom:
+        return custom if Path(custom).is_file() else None
+    found = shutil.which("soffice") or shutil.which("libreoffice")
+    if found:
+        return found
+    return next((p for p in _SOFFICE_PATHS if Path(p).is_file()), None)
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:

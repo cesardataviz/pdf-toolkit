@@ -9,8 +9,9 @@ flowchart LR
     user([Usuario])
 
     subgraph browser["Navegador · los archivos no salen de aquí"]
-        ui["App.tsx<br/>interfaz de herramientas"]
-        pdfops["lib/pdfOps.ts<br/>pdf-lib: buildPdf · imagesToPdf"]
+        ui["tools/*.tsx<br/>5 herramientas"]
+        pdfops["lib/pdfOps.ts<br/>pdf-lib: buildPdf · splitPdf · imagesToPdf"]
+        thumbs["lib/thumbnails.ts<br/>pdf.js: miniaturas"]
         images["lib/images.ts<br/>canvas: convertImage"]
         office["lib/office.ts<br/>cliente HTTP"]
     end
@@ -23,6 +24,7 @@ flowchart LR
 
     user --> ui
     ui --> pdfops
+    ui --> thumbs
     ui --> images
     images -- "WebP/BMP → PNG" --> pdfops
     ui --> office
@@ -83,12 +85,13 @@ sequenceDiagram
 
 | Pieza | Estado |
 |---|---|
-| `buildPdf`, `listPages` | Implementado y con tests |
-| `imagesToPdf`, `convertImage` | Implementado, sin tests automáticos (dependen de canvas del navegador) |
-| Servidor Office → PDF | Implementado, probado con LibreOffice simulado; **sin probar con LibreOffice real** |
-| UI | Básica: lista con subir/bajar/rotar/eliminar. Pendiente miniaturas (pdf.js) y arrastrar |
-| Editar texto en PDF/imágenes | No iniciado. Alcance previsto: reemplazar texto en una región seleccionada |
-| Comprimir PDF, dividir por rangos, marcas de agua | No iniciado |
+| `buildPdf`, `listPages`, `splitPdf`, `parseRanges` | Implementado y con tests |
+| Miniaturas (`pdf.js`) y arrastrar para reordenar | Implementado; probado en navegador (Playwright) |
+| `imagesToPdf`, `convertImage` | Implementado; probado en navegador (Playwright), sin tests unitarios (usan canvas) |
+| Servidor Office → PDF | Implementado y probado con **LibreOffice real** (test de integración) |
+| Interfaz | 5 herramientas, identidad visual compartida con files2md, claro/oscuro, escritorio y móvil |
+| Editar texto en PDF/imágenes | No iniciado. Ver [PENDIENTES.md](PENDIENTES.md) |
+| Comprimir PDF, marcas de agua, numerar páginas | No iniciado. Ver [PENDIENTES.md](PENDIENTES.md) |
 
 ## Límites conocidos
 

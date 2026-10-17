@@ -1,7 +1,9 @@
 # pdf-toolkit
 
-Herramientas de PDF e imágenes que corren **en tu navegador**: combinar, reordenar, rotar y eliminar páginas,
+Herramientas de PDF e imágenes que corren **en tu navegador**: combinar, ordenar, girar, dividir y extraer páginas,
 imágenes a PDF y conversión entre JPG/PNG/WebP. **Tus archivos no se suben a ningún servidor.**
+
+![Interfaz de pdf-toolkit: combinar y ordenar páginas de varios PDFs con miniaturas](docs/img/pdf-toolkit-interfaz.png)
 
 > Estado: en desarrollo. Ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
@@ -12,8 +14,9 @@ flowchart LR
     user([Usuario])
 
     subgraph browser["Navegador · los archivos no salen de aquí"]
-        ui["App.tsx<br/>interfaz de herramientas"]
-        pdfops["lib/pdfOps.ts<br/>pdf-lib: buildPdf · imagesToPdf"]
+        ui["tools/*.tsx<br/>5 herramientas"]
+        pdfops["lib/pdfOps.ts<br/>pdf-lib: buildPdf · splitPdf · imagesToPdf"]
+        thumbs["lib/thumbnails.ts<br/>pdf.js: miniaturas"]
         images["lib/images.ts<br/>canvas: convertImage"]
         office["lib/office.ts<br/>cliente HTTP"]
     end
@@ -26,6 +29,7 @@ flowchart LR
 
     user --> ui
     ui --> pdfops
+    ui --> thumbs
     ui --> images
     images -- "WebP/BMP → PNG" --> pdfops
     ui --> office
@@ -39,12 +43,13 @@ El flujo paso a paso y las decisiones técnicas están en [docs/ARCHITECTURE.md]
 
 ## Qué hace y dónde corre
 
-| Herramienta | Dónde |
-|---|---|
-| Combinar, reordenar, rotar, eliminar páginas | Navegador |
-| Imágenes (JPG, PNG, WebP...) → PDF | Navegador |
-| Convertir imágenes (WebP → JPG, PNG → JPG, etc.) | Navegador |
-| Word / Excel / PowerPoint → PDF | Servidor local opcional (LibreOffice) |
+| Herramienta | Qué hace | Dónde |
+|---|---|---|
+| Combinar y ordenar | Junta varios PDFs; miniaturas de cada página; arrastrar para reordenar; girar y quitar páginas | Navegador |
+| Dividir o extraer | Extraer páginas (`1-3, 5`), un PDF por rango o uno por página (en .zip) | Navegador |
+| Imágenes a PDF | JPG, PNG, WebP, GIF, BMP → un PDF, una imagen por página, en el orden que elijas | Navegador |
+| Convertir imagen | Entre JPG, PNG y WebP (lo transparente queda blanco en JPG); varias a la vez en .zip | Navegador |
+| Word, Excel, PPT a PDF | Con LibreOffice, en tu computadora | Servidor local opcional |
 
 ## Uso
 
@@ -64,6 +69,21 @@ docker compose up --build
 
 Abre http://127.0.0.1:8000.
 
+**Completo sin Docker** (Windows, PowerShell): instala [LibreOffice](https://www.libreoffice.org/) y luego
+
+```powershell
+cd server
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -e ".[dev]"
+uvicorn app.main:app --port 8000      # deja esta terminal abierta
+```
+
+En otra terminal, `cd web`, `npm install` y `npm run dev`: la interfaz usa el servidor automáticamente para
+Word/Excel/PPT → PDF. El servidor busca LibreOffice en el PATH y en `C:\Program Files\LibreOffice`; si lo instalaste
+en otro lugar, define `PDF_TOOLKIT_SOFFICE_CMD` con la ruta a `soffice.exe`. Para comprobarlo abre
+http://127.0.0.1:8000/api/health: debe decir `"libreoffice": true`.
+
 ## Desarrollo
 
 ```bash
@@ -78,3 +98,6 @@ cd server && pip install -e ".[dev]" && pytest    # tests del servidor
 ## Licencia
 
 [MIT](LICENSE). Ver `THIRD_PARTY_NOTICES.md`.
+
+El logo (`web/public/logo.png`) y la identidad visual **no** están cubiertos por la licencia MIT:
+si haces un fork, reemplázalos por los tuyos.
