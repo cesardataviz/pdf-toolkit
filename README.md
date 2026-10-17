@@ -51,6 +51,18 @@ El flujo paso a paso y las decisiones técnicas están en [docs/ARCHITECTURE.md]
 | Convertir imagen | Entre JPG, PNG y WebP (lo transparente queda blanco en JPG); varias a la vez en .zip | Navegador |
 | Word, Excel, PPT a PDF | Con LibreOffice, en tu computadora | Servidor local opcional |
 
+## Uso en Windows con doble clic
+
+Requisitos (una sola vez): [Python 3.11+](https://www.python.org/downloads/) y [Node.js LTS](https://nodejs.org/); para Word/Excel/PPT → PDF, también [LibreOffice](https://www.libreoffice.org/).
+
+1. Doble clic en **`iniciar.bat`**.
+2. La primera vez instala lo necesario (unos minutos). Las siguientes veces abre en segundos.
+3. Se abre el navegador en http://127.0.0.1:8001. Deja la ventana negra abierta mientras lo uses; ciérrala para apagarlo.
+
+`iniciar.bat` solo hace trabajo cuando hace falta: reinstala dependencias si cambió `pyproject.toml` o
+`package-lock.json`, y recompila la interfaz si cambió algún archivo (por ejemplo, después de un `git pull`).
+Opciones: `iniciar.bat -AccesoDirecto` crea un acceso directo en el Escritorio; `iniciar.bat -Puerto 9000` usa otro puerto.
+
 ## Uso
 
 **Solo navegador** (sin Office → PDF):
