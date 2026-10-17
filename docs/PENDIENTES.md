@@ -6,7 +6,7 @@ Lo que falta, en el orden en que conviene hacerlo. Cada punto dice **qué**, **c
 
 | Pendiente | Cómo se resolvió |
 |---|---|
-| Interfaz para usuario final | 5 herramientas en pestañas, identidad visual compartida con files2md, claro/oscuro |
+| Interfaz para usuario final | 5 herramientas en pestañas, con la identidad visual de la marca, claro/oscuro |
 | Ver las páginas antes de combinar | Miniaturas con pdf.js; arrastrar para reordenar, botones ←/→, girar y quitar |
 | Extraer y dividir páginas | `splitPdf` + `parseRanges` (`1-3, 5`); varios resultados se descargan en .zip |
 | Office → PDF sin Docker en Windows | El servidor busca `soffice` en el PATH y en `C:\Program Files\LibreOffice`, o en `PDF_TOOLKIT_SOFFICE_CMD` |
@@ -56,8 +56,8 @@ Implementarlo como variante del punto 4.
 
 ### 6. Editar texto en imágenes
 
-Requiere OCR (detectar dónde está el texto), borrar con inpainting y volver a escribir. Encaja mejor como función
-de files2md, que ya tiene Tesseract y OpenCV. Fuera de alcance de pdf-toolkit por ahora.
+Requiere OCR (detectar dónde está el texto), borrar con inpainting y volver a escribir. Necesitaría Tesseract y
+OpenCV, que pdf-toolkit no usa. Fuera de alcance por ahora.
 
 ## No hacer todavía
 

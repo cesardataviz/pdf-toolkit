@@ -1,12 +1,13 @@
 /* =========================================================================
-   Identidad compartida con files2md · tokens de marca
-   Marino #000659 (texto, acción principal) · Cian #08B8EE (acento, escaneo, foco)
-   Papel #FCFBFB (fondo). El cian NO se usa para texto pequeño sobre claro (contraste 2.2:1):
-   para eso está --accent-text (#0B6E8C, 5.6:1).
+   Identidad visual · tokens de marca
+   Base Softcom: marino #000659 (texto, acción principal) y papel #FCFBFB (fondo).
+   Acento de pdf-toolkit: ámbar #FFC23D (color funcional del sistema de marca de Softcom).
+   El ámbar NO se usa para texto sobre claro (contraste 1.6:1): para eso está --accent-text
+   (#8A5A00, 5.9:1). Sobre ámbar, el texto va en marino (11.1:1).
    ========================================================================= */
 :root {
   --navy: #000659;
-  --cyan: #08b8ee;
+  --amber: #ffc23d;
   --paper: #fcfbfb;
 
   --bg: var(--paper);
@@ -16,17 +17,19 @@
   --text-muted: #4a5080;
   --border: #dde0ee;
   --border-strong: #b9bed8;
-  --accent: var(--cyan);
-  --accent-text: #0b6e8c;
-  --accent-tint: #e5f7fd;
+  --accent: var(--amber);
+  --accent-text: #8a5a00;
+  --accent-tint: #fff6de;
+  --logo-ink: var(--navy);
+  --logo-paper: var(--paper);
   --primary-bg: var(--navy);
   --primary-fg: #ffffff;
   --primary-hover: #0a1475;
   --pixel: #8f95c2;
   --sheet: #ffffff;
   --success: #0b6e3c;
-  --warn-bg: #fff4e5;
-  --warn-text: #8a4b00;
+  --warn-bg: #fdeee8;
+  --warn-text: #9a3412; /* rojizo para no confundirse con el acento ámbar */
   --error-bg: #fdecec;
   --error-text: #a11a1a;
   --shadow: 0 1px 2px rgb(0 6 89 / 0.05), 0 12px 32px -12px rgb(0 6 89 / 0.18);
@@ -49,11 +52,13 @@
   --text-muted: #a7acd6;
   --border: #1d2366;
   --border-strong: #2f3685;
-  --accent-text: var(--cyan);
-  --accent-tint: rgb(8 184 238 / 0.12);
-  --primary-bg: var(--cyan);
+  --accent-text: var(--amber);
+  --accent-tint: rgb(255 194 61 / 0.14);
+  --primary-bg: var(--amber);
   --primary-fg: var(--navy);
-  --primary-hover: #36c8f3;
+  --logo-ink: #f3f4fb;
+  --logo-paper: var(--navy);
+  --primary-hover: #ffd06a;
   --pixel: #5a61a6;
   --sheet: #121860;
   --success: #4fd69a;
@@ -156,6 +161,30 @@ svg {
 
 .brand-two {
   color: var(--accent-text);
+}
+
+/* "por Softcom": marca paraguas, discreta al lado del nombre del producto */
+.by-softcom {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: auto;
+  margin-left: 14px;
+  padding-left: 14px;
+  border-left: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-decoration: none;
+}
+
+.by-softcom:hover {
+  color: var(--text);
+}
+
+@media (max-width: 560px) {
+  .by-softcom {
+    display: none;
+  }
 }
 
 .topbar-actions {

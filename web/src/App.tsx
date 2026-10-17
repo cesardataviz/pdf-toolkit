@@ -78,8 +78,7 @@ export default function App() {
         </section>
       </main>
       <footer className="footer">
-        <span>pdf-toolkit · código abierto con licencia MIT</span>
-        <span>Proyecto hermano: files2md (documentos a Markdown con OCR)</span>
+        <span>pdf-toolkit · un producto de Softcom · código abierto con licencia MIT</span>
       </footer>
     </div>
   );

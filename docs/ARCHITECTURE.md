@@ -70,7 +70,7 @@ sequenceDiagram
 2. **Una primitiva para páginas.** `buildPdf(sources, pages)` cubre combinar, reordenar, extraer, eliminar y rotar.
    La UI solo manipula la lista `PageRef[]`.
 3. **Servidor mínimo y opcional.** Solo para Office → PDF. Endpoint síncrono con semáforo de concurrencia (no cola
-   de jobs): es una herramienta local de un usuario. Si se expone a muchos usuarios, migrar al patrón de jobs de files2md.
+   de jobs): es una herramienta local de un usuario. Si se expone a muchos usuarios, migrar a una cola de jobs (procesar en segundo plano y consultar el estado).
 4. **Nada queda en disco.** El servidor convierte en un directorio temporal que se borra tras enviar la respuesta.
 
 ## Decisiones técnicas
@@ -89,7 +89,7 @@ sequenceDiagram
 | Miniaturas (`pdf.js`) y arrastrar para reordenar | Implementado; probado en navegador (Playwright) |
 | `imagesToPdf`, `convertImage` | Implementado; probado en navegador (Playwright), sin tests unitarios (usan canvas) |
 | Servidor Office → PDF | Implementado y probado con **LibreOffice real** (test de integración) |
-| Interfaz | 5 herramientas, identidad visual compartida con files2md, claro/oscuro, escritorio y móvil |
+| Interfaz | 5 herramientas, claro/oscuro, escritorio y móvil |
 | Editar texto en PDF/imágenes | No iniciado. Ver [PENDIENTES.md](PENDIENTES.md) |
 | Comprimir PDF, marcas de agua, numerar páginas | No iniciado. Ver [PENDIENTES.md](PENDIENTES.md) |
 

@@ -1,4 +1,8 @@
+<img src="web/public/logo.svg" alt="" width="72" height="72">
+
 # pdf-toolkit
+
+Un producto de **[Softcom](https://softcom.com.pe)**. Desarrollado por Cesar Romero.
 
 Herramientas de PDF e imágenes que corren **en tu navegador**: combinar, ordenar, girar, dividir y extraer páginas,
 imágenes a PDF y conversión entre JPG/PNG/WebP. **Tus archivos no se suben a ningún servidor.**
@@ -103,13 +107,12 @@ cd web && npm install && npm test                 # tests de las operaciones de 
 cd server && pip install -e ".[dev]" && pytest    # tests del servidor
 ```
 
-## Proyecto hermano
-
-[files2md](https://github.com/) — convierte PDFs, imágenes y documentos a Markdown/Word/PDF ordenado con OCR local.
-
 ## Licencia
 
 [MIT](LICENSE). Ver `THIRD_PARTY_NOTICES.md`.
 
-El logo (`web/public/logo.png`) y la identidad visual **no** están cubiertos por la licencia MIT:
-si haces un fork, reemplázalos por los tuyos.
+© 2026 SOFTWARE Y COMUNICACIONES SOCIEDAD COMERCIAL DE RESPONSABILIDAD LIMITADA - SOFTCOM S.R.L.
+Código bajo licencia MIT.
+
+El nombre Softcom, su logo, el ícono de pdf-toolkit (`web/public/logo.*`, `favicon.*`, `softcom.png`) y la identidad
+visual son marcas de Softcom y **no** están cubiertos por la licencia MIT: si haces un fork, reemplázalos por los tuyos.

@@ -1,6 +1,5 @@
 /* =========================================================================
-   pdf-toolkit · estilos propios. Los tokens de marca y componentes base viven en base.css
-   (compartidos con files2md: misma identidad visual para proyectos hermanos).
+   pdf-toolkit · estilos propios. Los tokens de marca y componentes base viven en base.css.
    ========================================================================= */
 
 /* ------------------------------------------------------------------ pestañas de herramientas */
@@ -35,7 +34,7 @@
 .tool-tab[aria-current="page"] {
   background: var(--surface);
   color: var(--text);
-  box-shadow: 0 1px 2px rgb(0 6 89 / 0.12), inset 0 -2px 0 var(--cyan);
+  box-shadow: 0 1px 2px rgb(0 6 89 / 0.12), inset 0 -2px 0 var(--accent);
 }
 
 .tool-head {
@@ -170,7 +169,7 @@
 }
 
 .page-card.is-over {
-  border-color: var(--cyan);
+  border-color: var(--accent);
   transform: scale(1.02);
 }
 
@@ -308,7 +307,7 @@
 }
 
 .text-input:focus-visible {
-  border-color: var(--cyan);
+  border-color: var(--accent);
   outline-offset: 0;
 }
 

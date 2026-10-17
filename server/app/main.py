@@ -5,7 +5,7 @@ Todo lo que se puede hacer en el navegador se hace allí. Este servidor solo exi
 2. Servir el frontend compilado en un solo contenedor.
 
 Decisión: endpoint SÍNCRONO con límite de concurrencia, no cola de jobs. Es una herramienta local de un usuario;
-una conversión típica tarda segundos. Si algún día se expone a muchos usuarios, pasar al patrón de jobs de files2md.
+una conversión típica tarda segundos. Si algún día se expone a muchos usuarios, pasar a una cola de jobs.
 """
 from __future__ import annotations
 

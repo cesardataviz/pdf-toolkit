@@ -15,7 +15,7 @@ interface Props {
 }
 
 // Colores para distinguir de qué PDF viene cada página cuando se combinan varios.
-const SOURCE_COLORS = ["#08B8EE", "#7C5CFF", "#F5A524", "#17C964", "#F31260", "#0B6E8C"];
+const SOURCE_COLORS = ["#F5A524", "#7C5CFF", "#08B8EE", "#17C964", "#F31260", "#0B6E8C"];
 
 function move<T>(list: T[], from: number, to: number): T[] {
   const next = [...list];

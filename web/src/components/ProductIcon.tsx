@@ -1,0 +1,8 @@
+// Ícono de pdf-toolkit. Los colores vienen de variables CSS para que funcione en claro y oscuro.
+export default function ProductIcon({ size = 34 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 64 64" width={size} height={size} aria-hidden="true">
+      <g transform="rotate(-14 32 36)"><path d="M16,12 H34 L44,22 V50 Q44,54 40,54 H16 Q12,54 12,50 V16 Q12,12 16,12 Z" fill="var(--logo-ink)" /></g><g transform="rotate(-4 32 36)" opacity=".55"><path d="M20,12 H38 L48,22 V50 Q48,54 44,54 H20 Q16,54 16,50 V16 Q16,12 20,12 Z" fill="var(--logo-ink)" /></g><path d="M26,14 H44 L54,24 V54 Q54,58 50,58 H26 Q22,58 22,54 V18 Q22,14 26,14 Z" fill="var(--accent)" /><rect x="29" y="30" width="18" height="4" rx="2" fill="#000659"/><rect x="29" y="38" width="14" height="4" rx="2" fill="#000659"/><rect x="29" y="46" width="10" height="4" rx="2" fill="#000659"/>
+    </svg>
+  );
+}
