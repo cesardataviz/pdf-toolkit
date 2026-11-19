@@ -1,14 +1,21 @@
 import { useState } from "react";
 import Header from "./components/Header";
 import ConvertImageTool from "./tools/ConvertImageTool";
+import EditTool from "./tools/EditTool";
 import ImagesToPdfTool from "./tools/ImagesToPdfTool";
 import OfficeTool from "./tools/OfficeTool";
 import OrganizeTool from "./tools/OrganizeTool";
 import SplitTool from "./tools/SplitTool";
 
-type ToolId = "organize" | "split" | "images" | "convert" | "office";
+type ToolId = "edit" | "organize" | "split" | "images" | "convert" | "office";
 
 const TOOLS: { id: ToolId; label: string; title: string; lede: string }[] = [
+  {
+    id: "edit",
+    label: "Editar y firmar",
+    title: "Edita y firma tu PDF",
+    lede: "Escribe texto, añade imágenes, firma, tapa o resalta. Lo que ya tiene el PDF queda intacto: solo se añade encima.",
+  },
   {
     id: "organize",
     label: "Combinar y ordenar",
@@ -42,7 +49,7 @@ const TOOLS: { id: ToolId; label: string; title: string; lede: string }[] = [
 ];
 
 export default function App() {
-  const [tool, setTool] = useState<ToolId>("organize");
+  const [tool, setTool] = useState<ToolId>("edit");
   const current = TOOLS.find((t) => t.id === tool)!;
 
   return (
@@ -70,6 +77,7 @@ export default function App() {
 
         {/* key: cada herramienta empieza limpia al cambiar de pestaña */}
         <section className="tool-body" key={tool}>
+          {tool === "edit" && <EditTool />}
           {tool === "organize" && <OrganizeTool />}
           {tool === "split" && <SplitTool />}
           {tool === "images" && <ImagesToPdfTool />}

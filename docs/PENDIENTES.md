@@ -9,6 +9,7 @@ Lo que falta, en el orden en que conviene hacerlo. Cada punto dice **qué**, **c
 | Interfaz para usuario final | 5 herramientas en pestañas, con la identidad visual de la marca, claro/oscuro |
 | Ver las páginas antes de combinar | Miniaturas con pdf.js; arrastrar para reordenar, botones ←/→, girar y quitar |
 | Extraer y dividir páginas | `splitPdf` + `parseRanges` (`1-3, 5`); varios resultados se descargan en .zip |
+| Añadir texto encima, imágenes y firma | Pestaña "Editar y firmar" (`EditTool` + `lib/editOps.ts`): texto, imagen, firma vectorial, lápiz, tapar, resaltar; deshacer/rehacer. Las ediciones se agregan como un content stream nuevo envuelto en q/Q: el contenido original no se toca ni se rasteriza. "Tapar y reescribir" cubre el caso realista del punto 5 |
 | Office → PDF sin Docker en Windows | El servidor busca `soffice` en el PATH y en `C:\Program Files\LibreOffice`, o en `PDF_TOOLKIT_SOFFICE_CMD` |
 
 ## Pendiente
@@ -18,7 +19,7 @@ Lo que falta, en el orden en que conviene hacerlo. Cada punto dice **qué**, **c
 | 1 | Numerar páginas | 🟠 Alta | Bajo (2–3 h) | Navegador (pdf-lib) |
 | 2 | Marca de agua de texto | 🟠 Alta | Bajo (2–3 h) | Navegador (pdf-lib) |
 | 3 | Comprimir PDF | 🟡 Media | Medio-alto | Navegador o servidor |
-| 4 | Añadir texto encima (anotar, rellenar) | 🟡 Media | Medio (1–2 días) | Navegador (pdf-lib + pdf.js) |
+| 4 | Fuentes propias en el editor (emojis, ✓, otros alfabetos) | 🟡 Media | Medio | Navegador (@pdf-lib/fontkit, subconjunto) |
 | 5 | Editar texto existente en PDF | 🟢 Baja | Alto | Ver nota |
 | 6 | Editar texto en imágenes | 🟢 Baja | Alto | Ver nota |
 
@@ -40,7 +41,14 @@ Dos caminos:
 
 Medir antes de prometer: en PDFs de solo texto la ganancia es casi nula.
 
-### 4. Añadir texto encima
+### 4. Fuentes propias en el editor
+
+Hoy el editor usa las 12 fuentes estándar del PDF (Helvetica, Times, Courier): no se incrustan y el archivo casi
+no crece, pero solo cubren WinAnsi (español completo, sin emojis ni ✓). Los caracteres fuera de ese conjunto se
+guardan como "?" y la interfaz lo advierte. Para ampliarlo: `@pdf-lib/fontkit` + una TTF incrustada como
+subconjunto (solo los glifos usados).
+
+### Antes: añadir texto encima (resuelto)
 
 Lo que la mayoría de usuarios llama "editar un PDF": escribir sobre él (rellenar un formulario impreso, poner una
 fecha, firmar). Se hace con un lienzo sobre la miniatura (pdf.js a mayor escala), cajas de texto posicionables y,
