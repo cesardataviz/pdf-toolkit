@@ -89,3 +89,14 @@ def test_soffice_path_override(tmp_path, monkeypatch):
     assert main.find_soffice() == str(fake)
     monkeypatch.setenv("PDF_TOOLKIT_SOFFICE_CMD", str(tmp_path / "no-existe.exe"))
     assert main.find_soffice() is None
+
+
+def test_interface_is_revalidated_but_hashed_assets_are_cached(tmp_path):
+    web = tmp_path / "web"
+    (web / "assets").mkdir(parents=True)
+    (web / "index.html").write_text("<!doctype html>")
+    (web / "assets" / "index-abc123.js").write_text("")
+    c = TestClient(create_app(Settings(web_dir=web)))
+    assert c.get("/").headers["cache-control"] == "no-cache"
+    assert "immutable" in c.get("/assets/index-abc123.js").headers["cache-control"]
+    assert "cache-control" not in c.get("/api/health").headers

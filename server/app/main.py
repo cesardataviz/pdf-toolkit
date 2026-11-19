@@ -130,6 +130,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             background=BackgroundTask(shutil.rmtree, workdir, ignore_errors=True),
         )
 
+    @app.middleware("http")
+    async def cache_headers(request: Request, call_next):
+        # index.html y demás archivos sin hash: el navegador debe revalidar siempre (si no, tras actualizar sigue
+        # mostrando la interfaz vieja). Los de /assets/ llevan hash en el nombre: pueden guardarse para siempre.
+        response = await call_next(request)
+        path = request.url.path
+        if not path.startswith("/api/"):
+            response.headers["Cache-Control"] = (
+                "public, max-age=31536000, immutable" if path.startswith("/assets/") else "no-cache"
+            )
+        return response
+
     if settings.web_dir.is_dir():
         app.mount("/", StaticFiles(directory=settings.web_dir, html=True), name="web")
     return app
