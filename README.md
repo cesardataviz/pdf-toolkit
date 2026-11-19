@@ -4,7 +4,7 @@
 
 Un producto de **[Softcom](https://softcom.com.pe)**. Desarrollado por Cesar Romero.
 
-Herramientas de PDF e imágenes que corren **en tu navegador**: combinar, ordenar, girar, dividir y extraer páginas,
+Herramientas de PDF e imágenes que corren **en tu navegador**: editar y firmar, combinar, ordenar, girar, dividir y extraer páginas,
 imágenes a PDF y conversión entre JPG/PNG/WebP. **Tus archivos no se suben a ningún servidor.**
 
 ![Interfaz de pdf-toolkit: combinar y ordenar páginas de varios PDFs con miniaturas](docs/img/pdf-toolkit-interfaz.png)
@@ -49,6 +49,7 @@ El flujo paso a paso y las decisiones técnicas están en [docs/ARCHITECTURE.md]
 
 | Herramienta | Qué hace | Dónde |
 |---|---|---|
+| Editar y firmar | Escribir texto, añadir imágenes, firmar (trazo vectorial), dibujar, tapar y resaltar. Lo original queda intacto: solo se añade encima | Navegador |
 | Combinar y ordenar | Junta varios PDFs; miniaturas de cada página; arrastrar para reordenar; girar y quitar páginas | Navegador |
 | Dividir o extraer | Extraer páginas (`1-3, 5`), un PDF por rango o uno por página (en .zip) | Navegador |
 | Imágenes a PDF | JPG, PNG, WebP, GIF, BMP → un PDF, una imagen por página, en el orden que elijas | Navegador |
